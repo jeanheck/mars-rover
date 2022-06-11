@@ -1,16 +1,9 @@
-import Order from './order';
+import Axis from './axis';
 
 export default class Plateau {
-  orders: Order[];
+  size: Axis;
 
-  constructor(orders: Order[]) {
-    this.orders = orders;
-  }
-
-  sendRoversToExplore() {
-    this.orders.forEach(async (order) => {
-      const { rover, instructions } = order;
-      await rover.explore(instructions);
-    });
+  constructor(size: Axis) {
+    this.size = size;
   }
 }

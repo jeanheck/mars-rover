@@ -1,55 +1,59 @@
 import {
   NORTH, SOUTH, EAST, WEST, LEFT, RIGHT, MOVE,
-} from './directions';
+} from '@/utils/directions';
+import Axis from './axis';
 
 export default class Rover {
-  private xAxys: number;
+  private position: Axis;
 
-  private yAxys: number;
+  orientation: string;
 
-  cardinal: string;
-
-  constructor(xAxys: number, yAxys: number, cardinal: string) {
-    this.xAxys = xAxys;
-    this.yAxys = yAxys;
-    this.cardinal = cardinal;
+  constructor(position: Axis, orientation: string) {
+    this.position = position;
+    this.orientation = orientation;
   }
 
-  getXAxys() {
-    return this.xAxys;
+  getPosition() {
+    return this.position;
   }
 
-  setXAxys(value: number) {
-    this.xAxys = value;
-    if (this.xAxys < 0) {
-      this.xAxys = 0;
+  setPosition(position: Axis) {
+    this.position = position;
+  }
+
+  private setPositionX(plateauSize: Axis, difference: number) {
+    const newX = this.position.x + difference;
+    const lessThanZero = newX < 0;
+    const biggerThanPlateau = newX > plateauSize.x;
+
+    if (!lessThanZero && !biggerThanPlateau) {
+      this.position.x = newX;
     }
   }
 
-  getYAxys() {
-    return this.yAxys;
-  }
+  private setPositionY(plateauSize: Axis, difference: number) {
+    const newY = this.position.y + difference;
+    const lessThanZero = newY < 0;
+    const biggerThanPlateau = newY > plateauSize.y;
 
-  setYAxys(value: number) {
-    this.yAxys = value;
-    if (this.yAxys < 0) {
-      this.yAxys = 0;
+    if (!lessThanZero && !biggerThanPlateau) {
+      this.position.y = newY;
     }
   }
 
   private rotateToLeft() {
-    switch (this.cardinal) {
+    switch (this.orientation) {
       case NORTH:
-        this.cardinal = WEST;
+        this.orientation = WEST;
         break;
       case WEST:
-        this.cardinal = SOUTH;
+        this.orientation = SOUTH;
         break;
       case SOUTH:
-        this.cardinal = EAST;
+        this.orientation = EAST;
         break;
       case EAST:
-        this.cardinal = NORTH;
+        this.orientation = NORTH;
         break;
       default:
         break;
@@ -57,18 +61,18 @@ export default class Rover {
   }
 
   private rotateToRight() {
-    switch (this.cardinal) {
+    switch (this.orientation) {
       case NORTH:
-        this.cardinal = EAST;
+        this.orientation = EAST;
         break;
       case EAST:
-        this.cardinal = SOUTH;
+        this.orientation = SOUTH;
         break;
       case SOUTH:
-        this.cardinal = WEST;
+        this.orientation = WEST;
         break;
       case WEST:
-        this.cardinal = NORTH;
+        this.orientation = NORTH;
         break;
       default:
         break;
@@ -88,40 +92,52 @@ export default class Rover {
     }
   }
 
-  move() {
-    switch (this.cardinal) {
+  move(plateauSize: Axis) {
+    switch (this.orientation) {
       case NORTH:
-        this.yAxys += 1;
+        this.setPositionY(plateauSize, 1);
         break;
       case SOUTH:
-        this.yAxys -= 1;
+        this.setPositionY(plateauSize, -1);
         break;
       case WEST:
-        this.xAxys -= 1;
+        this.setPositionX(plateauSize, -1);
         break;
       case EAST:
-        this.xAxys += 1;
+        this.setPositionX(plateauSize, 1);
         break;
       default:
         break;
     }
   }
 
-  explore(actions: string[]) {
-    actions.forEach((action) => {
-      switch (action) {
-        case MOVE:
-          this.move();
-          break;
-        case LEFT:
-          this.rotateToLeft();
-          break;
-        case RIGHT:
-          this.rotateToRight();
-          break;
-        default:
-          break;
-      }
+  async explore(actions: string[], plateauSize: Axis) {
+    return new Promise((resolve) => {
+      actions.forEach((action, i) => {
+        setTimeout(() => {
+          switch (action) {
+            case MOVE:
+              this.move(plateauSize);
+              break;
+            case LEFT:
+              this.rotateToLeft();
+              break;
+            case RIGHT:
+              this.rotateToRight();
+              break;
+            default:
+              break;
+          }
+
+          // console.log(`Position -> ${this.getPosition()}; Orientation -> ${this.orientation}`);
+
+          if (i === actions.length - 1) {
+            setTimeout(() => {
+              resolve(true);
+            }, 1000);
+          }
+        }, i * 1000);
+      });
     });
   }
 }

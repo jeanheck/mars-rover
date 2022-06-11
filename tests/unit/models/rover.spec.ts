@@ -1,93 +1,67 @@
-import Rover from '@/models/rover';
+import { Plateau, Rover } from '@/models';
 import {
   EAST, LEFT, MOVE, NORTH, RIGHT, SOUTH, WEST,
-} from '@/models/directions';
+} from '@/utils/directions';
+
+jest.setTimeout(60000);
 
 describe('Rover', () => {
-  let rover: Rover;
-
-  beforeAll(() => {
-    rover = new Rover(0, 0, NORTH);
-  });
+  const rover = new Rover({ x: 0, y: 0 }, NORTH);
+  const plateau = new Plateau({ x: 9, y: 9 });
 
   it('rotate a rover to left, when the original position is NORTH', () => {
-    rover.cardinal = NORTH;
+    rover.orientation = NORTH;
     rover.rotateTo(LEFT);
 
-    expect(rover.cardinal).toBe(WEST);
+    expect(rover.orientation).toBe(WEST);
   });
   it('rotate a rover to right, when the original position is NORTH', () => {
-    rover.cardinal = NORTH;
+    rover.orientation = NORTH;
     rover.rotateTo(RIGHT);
 
-    expect(rover.cardinal).toBe(EAST);
+    expect(rover.orientation).toBe(EAST);
   });
   it('rotate a rover to left, when the original position is SOUTH', () => {
-    rover.cardinal = SOUTH;
+    rover.orientation = SOUTH;
     rover.rotateTo(LEFT);
 
-    expect(rover.cardinal).toBe(EAST);
+    expect(rover.orientation).toBe(EAST);
   });
   it('rotate a rover to right, when the original position is SOUTH', () => {
-    rover.cardinal = SOUTH;
+    rover.orientation = SOUTH;
     rover.rotateTo(RIGHT);
 
-    expect(rover.cardinal).toBe(WEST);
+    expect(rover.orientation).toBe(WEST);
   });
 
   it('move the rover in different ways', () => {
-    rover.cardinal = NORTH;
-    rover.move();
-    rover.move();
-    rover.move();
+    rover.orientation = NORTH;
+    rover.move(plateau.size);
+    expect(rover.getPosition().y).toBe(1);
 
-    expect(rover.getYAxys()).toBe(3);
-    expect(rover.getXAxys()).toBe(0);
+    rover.orientation = EAST;
+    rover.move(plateau.size);
 
-    rover.cardinal = EAST;
-    rover.move();
-    rover.move();
-    rover.move();
+    expect(rover.getPosition().x).toBe(1);
 
-    expect(rover.getYAxys()).toBe(3);
-    expect(rover.getXAxys()).toBe(3);
+    rover.orientation = SOUTH;
+    rover.move(plateau.size);
 
-    rover.cardinal = SOUTH;
-    rover.move();
-    rover.move();
-    rover.move();
+    expect(rover.getPosition().y).toBe(0);
 
-    expect(rover.getYAxys()).toBe(0);
-    expect(rover.getXAxys()).toBe(3);
+    rover.orientation = WEST;
+    rover.move(plateau.size);
 
-    rover.cardinal = WEST;
-    rover.move();
-    rover.move();
-    rover.move();
-
-    expect(rover.getYAxys()).toBe(0);
-    expect(rover.getXAxys()).toBe(0);
+    expect(rover.getPosition().x).toBe(0);
   });
 
-  it('move the rover with a sequence of exploration actions', () => {
-    rover.cardinal = NORTH;
-    rover.setXAxys(1);
-    rover.setYAxys(2);
+  it('move the rover with a sequence of exploration actions', async () => {
+    rover.orientation = NORTH;
+    rover.setPosition({ x: 1, y: 2 });
 
-    rover.explore([LEFT, MOVE, LEFT, MOVE, LEFT, MOVE, LEFT, MOVE, MOVE]);
+    await rover.explore([LEFT, MOVE, LEFT, MOVE, LEFT, MOVE, LEFT, MOVE, MOVE], plateau.size);
 
-    expect(rover.getXAxys()).toBe(1);
-    expect(rover.getYAxys()).toBe(3);
-    expect(rover.cardinal).toBe(NORTH);
-
-    rover.cardinal = EAST;
-    rover.setXAxys(3);
-    rover.setYAxys(3);
-
-    rover.explore([MOVE, RIGHT, RIGHT, MOVE, MOVE, RIGHT, MOVE, RIGHT, RIGHT, MOVE]);
-
-    expect(rover.getXAxys()).toBe(2);
-    expect(rover.getYAxys()).toBe(3);
-    expect(rover.cardinal).toBe(SOUTH);
+    expect(rover.getPosition()).toStrictEqual({ x: 1, y: 3 });
+    expect(rover.orientation).toBe(NORTH);
   });
 });
