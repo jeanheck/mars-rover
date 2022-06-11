@@ -6,8 +6,8 @@ import {
 jest.setTimeout(60000);
 
 describe('Rover', () => {
-  const rover = new Rover({ x: 0, y: 0 }, NORTH);
-  const plateau = new Plateau({ x: 9, y: 9 });
+  const rover = new Rover({ x: 0, y: 0 }, NORTH, [], 'black');
+  const plateau = new Plateau({ x: 9, y: 9 }, [rover]);
 
   it('rotate a rover to left, when the original position is NORTH', () => {
     rover.orientation = NORTH;
@@ -36,21 +36,21 @@ describe('Rover', () => {
 
   it('move the rover in different ways', () => {
     rover.orientation = NORTH;
-    rover.move(plateau.size);
+    plateau.move(rover);
     expect(rover.getPosition().y).toBe(1);
 
     rover.orientation = EAST;
-    rover.move(plateau.size);
+    plateau.move(rover);
 
     expect(rover.getPosition().x).toBe(1);
 
     rover.orientation = SOUTH;
-    rover.move(plateau.size);
+    plateau.move(rover);
 
     expect(rover.getPosition().y).toBe(0);
 
     rover.orientation = WEST;
-    rover.move(plateau.size);
+    plateau.move(rover);
 
     expect(rover.getPosition().x).toBe(0);
   });
@@ -58,8 +58,9 @@ describe('Rover', () => {
   it('move the rover with a sequence of exploration actions', async () => {
     rover.orientation = NORTH;
     rover.setPosition({ x: 1, y: 2 });
+    rover.instructions = [LEFT, MOVE, LEFT, MOVE, LEFT, MOVE, LEFT, MOVE, MOVE];
 
-    await rover.explore([LEFT, MOVE, LEFT, MOVE, LEFT, MOVE, LEFT, MOVE, MOVE], plateau.size);
+    await plateau.explore(rover);
 
     expect(rover.getPosition()).toStrictEqual({ x: 1, y: 3 });
     expect(rover.orientation).toBe(NORTH);

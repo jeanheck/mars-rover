@@ -2,21 +2,21 @@
   <div id="plateau-view">
     <canvas
       id="plateau"
-      :width="adaptPlateauSize(this.plateauSize.x)"
-      :height="adaptPlateauSize(this.plateauSize.y)">
+      :width="adaptPlateauSize(this.plateau.size.x)"
+      :height="adaptPlateauSize(this.plateau.size.y)">
     </canvas>
 
-    <ul class="rovers">
-      <li v-for="order in orders" :key="order.color">
+    <ul class="rovers-status">
+      <li v-for="rover in plateau.rovers" :key="rover.color">
         <div class="rover">
           <p class="rover-color">
-            Color: {{order.color}}
+            Color: {{rover.color}}
           </p>
           <p class="rover-position">
-            Position: {{order.rover.getPosition()}}
+            Position: {{rover.getPosition()}}
           </p>
           <p class="rover-orientation">
-            Orientation: {{order.rover.orientation}}
+            Orientation: {{rover.orientation}}
           </p>
         </div>
       </li>
@@ -27,34 +27,23 @@
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
 import {
-  EAST, LEFT, MOVE, NORTH, RIGHT, SOUTH, WEST,
+  EAST, formatOrientationLabel, LEFT, MOVE, NORTH, RIGHT,
 } from '@/utils/directions';
-import { Axis, Order, Rover } from '@/models';
-import sendRoversToExplore from '@/services/exploration';
+import {
+  Axis, Plateau, Rover,
+} from '@/models';
 
 @Options({
   data() {
     return {
       unitSize: 20,
-      plateauSize: new Axis(9, 9),
-      orders: [
-        {
-          color: 'blue',
-          rover: new Rover({ x: 1, y: 2 }, NORTH),
-          instructions: [LEFT, MOVE, LEFT, MOVE, LEFT, MOVE, LEFT, MOVE, MOVE],
-        },
-        {
-          color: 'green',
-          rover: new Rover({ x: 3, y: 3 }, EAST),
-          instructions: [MOVE, RIGHT, RIGHT, MOVE, MOVE, RIGHT, MOVE, RIGHT, RIGHT, MOVE],
-        },
-        {
-          color: 'red',
-          rover: new Rover({ x: 0, y: 0 }, NORTH),
-          instructions: [MOVE, MOVE, MOVE, RIGHT, MOVE, MOVE, MOVE, RIGHT, MOVE],
-        },
-      ] as Order[],
-      adaptedPosition: new Axis(0, 0),
+      rovers: [
+        new Rover({ x: 1, y: 2 }, NORTH, [LEFT, MOVE, LEFT, MOVE, LEFT, MOVE, LEFT, MOVE, MOVE], 'blue'),
+        new Rover({ x: 3, y: 3 }, EAST, [MOVE, RIGHT, RIGHT, MOVE, MOVE, RIGHT, MOVE, RIGHT, RIGHT, MOVE], 'green'),
+        new Rover({ x: 0, y: 0 }, NORTH, [MOVE, MOVE, MOVE, RIGHT, MOVE, MOVE, MOVE, RIGHT, MOVE], 'red'),
+        new Rover({ x: 4, y: 0 }, NORTH, [MOVE, MOVE, MOVE, LEFT, MOVE, MOVE, MOVE, LEFT, MOVE], 'purple'),
+      ],
+      plateau: new Plateau({ x: 9, y: 9 }, []),
       canvas: {} as HTMLCanvasElement,
       context: {} as CanvasRenderingContext2D,
     };
@@ -63,7 +52,7 @@ import sendRoversToExplore from '@/services/exploration';
     getPlateauLowerLeft(): Axis {
       return {
         x: 0,
-        y: this.adaptPlateauSize(this.plateauSize.y) - this.unitSize,
+        y: this.adaptPlateauSize(this.plateau.size.y) - this.unitSize,
       };
     },
     getPositionOnPlateau(position: Axis): Axis {
@@ -82,49 +71,30 @@ import sendRoversToExplore from '@/services/exploration';
       const x = lowerLeft.x + positionOnPlateau.x;
       const y = lowerLeft.y - positionOnPlateau.y;
 
-      // console.log(`x -> ${x} y -> ${y}`);
-
       return {
         x,
         y,
       };
     },
-    formatOrientationLabel(orientation: string): string {
-      switch (orientation) {
-        case NORTH:
-          return '🡅';
-        case SOUTH:
-          return '🡇';
-        case EAST:
-          return '🡆';
-        case WEST:
-          return '🡄';
-        default:
-          return '';
-      }
-    },
     animate() {
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-      this.orders.forEach((order: {
-        color: string,
-        rover: Rover
-      }) => {
-        // eslint-disable-next-line no-param-reassign
-        this.context.fillStyle = order.color;
+      this.plateau.rovers.forEach((rover: Rover) => {
+        this.context.fillStyle = rover.color;
+        this.context.strokeStyle = rover.color;
         this.context.font = '15px Arial';
 
-        this.adaptedPosition = this.adaptRoverPosition(order.rover.getPosition());
+        const adaptedPosition = this.adaptRoverPosition(rover.getPosition());
 
         this.context.fillText(
-          this.formatOrientationLabel(order.rover.orientation),
-          this.adaptedPosition.x + 3,
-          this.adaptedPosition.y - 3,
+          formatOrientationLabel(rover.orientation),
+          adaptedPosition.x + 3,
+          adaptedPosition.y + 15,
         );
 
-        this.context.fillRect(
-          this.adaptedPosition.x,
-          this.adaptedPosition.y,
+        this.context.strokeRect(
+          adaptedPosition.x,
+          adaptedPosition.y,
           this.unitSize,
           this.unitSize,
         );
@@ -135,14 +105,10 @@ import sendRoversToExplore from '@/services/exploration';
     this.canvas = document.getElementById('plateau') as HTMLCanvasElement;
     this.context = this.canvas.getContext('2d') as CanvasRenderingContext2D;
 
-    this.animate();
+    this.plateau.rovers = this.rovers;
+    this.plateau.sendRoversToExplore();
 
-    sendRoversToExplore(this.orders, this.plateauSize);
-
-    setInterval(
-      this.animate,
-      25,
-    );
+    setInterval(this.animate, 25);
   },
 })
 export default class PlateauView extends Vue {}
@@ -154,7 +120,7 @@ export default class PlateauView extends Vue {}
     padding: 0;
     margin: 0;
   }
-  .rovers {
+  .rovers-status {
     list-style: none;
   }
 </style>

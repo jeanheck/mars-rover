@@ -8,3 +8,18 @@ export const RIGHT = 'R';
 export const LEFT = 'L';
 // Possible rover movement
 export const MOVE = 'M';
+
+export function formatOrientationLabel(orientation: string): string {
+  switch (orientation) {
+    case NORTH:
+      return '🡅';
+    case SOUTH:
+      return '🡇';
+    case EAST:
+      return '🡆';
+    case WEST:
+      return '🡄';
+    default:
+      return '';
+  }
+}
