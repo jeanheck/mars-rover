@@ -16,6 +16,7 @@ docker exec mars-rovers-app yarn run test:unit
 ```
 
 ## Without Docker
+PS: Vue CLI 4.x requires Node.js version 8.9 or above (v10+ recommended). You can manage multiple versions of Node on the same machine with n, nvm or nvm-windows (https://cli.vuejs.org/guide/installation.html)
 
 ### Requirements
 
