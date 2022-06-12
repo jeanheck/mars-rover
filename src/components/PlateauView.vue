@@ -13,7 +13,7 @@
             Color: {{rover.color}}
           </p>
           <p class="rover-position">
-            Position: {{rover.getPosition()}}
+            Position: {{rover.position}}
           </p>
           <p class="rover-orientation">
             Orientation: {{rover.orientation}}
@@ -27,7 +27,7 @@
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
 import {
-  EAST, formatOrientationLabel, LEFT, MOVE, NORTH, RIGHT,
+  EAST, formatOrientationLabel, LEFT, MOVE, NORTH, RIGHT, SOUTH,
 } from '@/utils/directions';
 import {
   Axis, Plateau, Rover,
@@ -40,8 +40,8 @@ import {
       rovers: [
         new Rover({ x: 1, y: 2 }, NORTH, [LEFT, MOVE, LEFT, MOVE, LEFT, MOVE, LEFT, MOVE, MOVE], 'blue'),
         new Rover({ x: 3, y: 3 }, EAST, [MOVE, RIGHT, RIGHT, MOVE, MOVE, RIGHT, MOVE, RIGHT, RIGHT, MOVE], 'green'),
-        new Rover({ x: 0, y: 0 }, NORTH, [MOVE, MOVE, MOVE, RIGHT, MOVE, MOVE, MOVE, RIGHT, MOVE], 'red'),
         new Rover({ x: 4, y: 0 }, NORTH, [MOVE, MOVE, MOVE, LEFT, MOVE, MOVE, MOVE, LEFT, MOVE], 'purple'),
+        new Rover({ x: 0, y: 0 }, SOUTH, [MOVE, LEFT, LEFT, MOVE, MOVE, MOVE, RIGHT, MOVE], 'red'),
       ],
       plateau: new Plateau({ x: 9, y: 9 }, []),
       canvas: {} as HTMLCanvasElement,
@@ -84,7 +84,7 @@ import {
         this.context.strokeStyle = rover.color;
         this.context.font = '15px Arial';
 
-        const adaptedPosition = this.adaptRoverPosition(rover.getPosition());
+        const adaptedPosition = this.adaptRoverPosition(rover.position);
 
         this.context.fillText(
           formatOrientationLabel(rover.orientation),

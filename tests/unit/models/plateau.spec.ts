@@ -14,10 +14,10 @@ describe('Plateau', () => {
 
     await plateau.sendRoversToExplore();
 
-    expect(roverOne.getPosition()).toStrictEqual({ x: 1, y: 3 });
+    expect(roverOne.position).toStrictEqual({ x: 1, y: 3 });
     expect(roverOne.orientation).toBe(NORTH);
 
-    expect(roverTwo.getPosition()).toStrictEqual({ x: 2, y: 3 });
+    expect(roverTwo.position).toStrictEqual({ x: 2, y: 3 });
     expect(roverTwo.orientation).toBe(SOUTH);
   });
 
@@ -27,7 +27,7 @@ describe('Plateau', () => {
 
     plateau.sendRoversToExplore();
 
-    expect(roverOne.getPosition()).toStrictEqual({ x: 1, y: 2 });
+    expect(roverOne.position).toStrictEqual({ x: 1, y: 2 });
     expect(roverOne.orientation).toBe(NORTH);
   });
 });

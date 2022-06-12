@@ -37,22 +37,22 @@ describe('Rover', () => {
   it('move the rover in different ways', () => {
     rover.orientation = NORTH;
     plateau.move(rover);
-    expect(rover.getPosition().y).toBe(1);
+    expect(rover.position.y).toBe(1);
 
     rover.orientation = EAST;
     plateau.move(rover);
 
-    expect(rover.getPosition().x).toBe(1);
+    expect(rover.position.x).toBe(1);
 
     rover.orientation = SOUTH;
     plateau.move(rover);
 
-    expect(rover.getPosition().y).toBe(0);
+    expect(rover.position.y).toBe(0);
 
     rover.orientation = WEST;
     plateau.move(rover);
 
-    expect(rover.getPosition().x).toBe(0);
+    expect(rover.position.x).toBe(0);
   });
 
   it('move the rover with a sequence of exploration actions', async () => {
@@ -62,7 +62,7 @@ describe('Rover', () => {
 
     await plateau.explore(rover);
 
-    expect(rover.getPosition()).toStrictEqual({ x: 1, y: 3 });
+    expect(rover.position).toStrictEqual({ x: 1, y: 3 });
     expect(rover.orientation).toBe(NORTH);
   });
 });

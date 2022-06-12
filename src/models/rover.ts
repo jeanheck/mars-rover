@@ -1,11 +1,10 @@
 import {
-  NORTH, SOUTH, EAST, WEST, LEFT, RIGHT, MOVE,
+  NORTH, SOUTH, EAST, WEST, LEFT, RIGHT,
 } from '@/utils/directions';
-import getPositionInfo from '@/utils/plateau';
 import Axis from './axis';
 
 export default class Rover {
-  private position: Axis;
+  position: Axis;
 
   orientation: string;
 
@@ -22,46 +21,12 @@ export default class Rover {
     this.color = color;
   }
 
-  getPosition() {
-    return this.position;
-  }
-
   setPosition(position: Axis) {
     this.position = position;
   }
 
   getOtherRoversPositions() {
-    return this.otherRoversOnPlateau.map((rover) => rover.getPosition());
-  }
-
-  setPositionX(plateauSize: Axis, difference: number) {
-    const {
-      newValue,
-      lessThanZero,
-      biggerThanPlateau,
-    } = getPositionInfo(this.position.x, difference, plateauSize.x);
-
-    if (
-      !lessThanZero
-      && !biggerThanPlateau
-    ) {
-      this.position.x = newValue;
-    }
-  }
-
-  setPositionY(plateauSize: Axis, difference: number) {
-    const {
-      newValue,
-      lessThanZero,
-      biggerThanPlateau,
-    } = getPositionInfo(this.position.y, difference, plateauSize.y);
-
-    if (
-      !lessThanZero
-      && !biggerThanPlateau
-    ) {
-      this.position.y = newValue;
-    }
+    return this.otherRoversOnPlateau.map((rover) => rover.position);
   }
 
   rotateToLeft() {

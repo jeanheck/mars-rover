@@ -33,7 +33,7 @@ export default class Plateau {
   }
 
   getAllRoverPositions() {
-    return this.rovers.map((rover) => rover.getPosition());
+    return this.rovers.map((rover) => rover.position);
   }
 
   positionIsBusy(position: Axis) {
@@ -42,42 +42,55 @@ export default class Plateau {
       !== undefined;
   }
 
+  plateauWithoutSpace(position: Axis, difference: number, axle: string) {
+    const axleValue = axle === 'x' ? position.x : position.y;
+    const plateauAxleValue = axle === 'x' ? this.size.x : this.size.y;
+
+    const newValue = axleValue + difference;
+    const lessThanZero = newValue < 0;
+    const biggerThanPlateau = newValue > plateauAxleValue;
+
+    return lessThanZero || biggerThanPlateau;
+  }
+
+  isPossibleToMove(position: Axis, difference: number, axle: string) {
+    const futurePosition = {
+      x: axle === 'x' ? position.x + difference : position.x,
+      y: axle === 'y' ? position.y + difference : position.y,
+    };
+
+    return !this.positionIsBusy(futurePosition)
+      && !this.plateauWithoutSpace(position, difference, axle);
+  }
+
   move(rover: Rover) {
     switch (rover.orientation) {
       case NORTH:
-        // agora eu sei a posição do rover
-        // e tenho os dados dos outros rovers
-
-        // só preciso verificar a posição deles antes, e se a posição para qual eu vou,
-        // não estiver bloqueada antes, eu dou um set
-
-        // o set do rover deve apenas mover, as verificações devem ficar todas aqui
-
-        if (this.positionIsBusy({ x: rover.getPosition().x, y: rover.getPosition().y + 1 })) {
-          console.log('Posição ocupada!');
+        if (this.isPossibleToMove(rover.position, 1, 'y')) {
+          rover.setPosition({ x: rover.position.x, y: rover.position.y + 1 });
         } else {
-          rover.setPositionY(this.size, 1);
+          console.log('Position is busy, or Plateau is out of limits!');
         }
         break;
       case SOUTH:
-        if (this.positionIsBusy({ x: rover.getPosition().x, y: rover.getPosition().y - 1 })) {
-          console.log('Posição ocupada!');
+        if (this.isPossibleToMove(rover.position, -1, 'y')) {
+          rover.setPosition({ x: rover.position.x, y: rover.position.y - 1 });
         } else {
-          rover.setPositionY(this.size, -1);
+          console.log('Position is busy, or Plateau is out of limits!');
         }
         break;
       case WEST:
-        if (this.positionIsBusy({ x: rover.getPosition().x - 1, y: rover.getPosition().y })) {
-          console.log('Posição ocupada!');
+        if (this.isPossibleToMove(rover.position, -1, 'x')) {
+          rover.setPosition({ x: rover.position.x - 1, y: rover.position.y });
         } else {
-          rover.setPositionX(this.size, -1);
+          console.log('Position is busy, or Plateau is out of limits!');
         }
         break;
       case EAST:
-        if (this.positionIsBusy({ x: rover.getPosition().x + 1, y: rover.getPosition().y })) {
-          console.log('Posição ocupada!');
+        if (this.isPossibleToMove(rover.position, 1, 'x')) {
+          rover.setPosition({ x: rover.position.x + 1, y: rover.position.y });
         } else {
-          rover.setPositionX(this.size, 1);
+          console.log('Position is busy, or Plateau is out of limits!');
         }
         break;
       default:
@@ -102,8 +115,6 @@ export default class Plateau {
             default:
               break;
           }
-
-          // console.log(`Position -> ${this.getPosition()}; Orientation -> ${this.orientation}`);
 
           if (i === rover.instructions.length - 1) {
             setTimeout(() => {
