@@ -52,3 +52,15 @@ yarn test:unit
 ```
 yarn lint
 ```
+
+## About the project and the problem
+
+In that [link](https://gitlab.com/voyager-portal/voyager-rover-test) you can see the problem proposed.<br />
+The logical part, you can find in models folder (src/models/).<br />
+The code responsible to the simulation that you find when you open http://localhost:8080, is on src/components/PlateauView.vue.<br />
+To add more rovers with different pattens of movement, just add a new Rover object declaration on the ```rovers``` array, on line 40.<br />
+The pre-existent Blue rover and Green rover, simulates the two rovers on the exercise description.<br />
+
+### Two more improvements
+
+The rovers have a kind of "Colision system" and "Dont trespass plateau limits" system. You can check that opening the [simulation](http://localhost:8080) and pressing opening the browser console. A message will appear if the rover cannot move.
