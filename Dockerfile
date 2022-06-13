@@ -2,10 +2,8 @@ FROM node:17
 
 RUN yarn global add @vue/cli
 
-RUN mkdir app
-
-WORKDIR /app
-
-COPY . app/
+COPY package.json .
 
 RUN yarn install
+
+COPY . .
