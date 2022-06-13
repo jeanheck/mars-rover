@@ -10,7 +10,7 @@ docker-compose up
 ```
 
 ### Run tests
-
+With your container running, execute:
 ```
 docker exec mars-rovers-app yarn run test:unit
 ```
