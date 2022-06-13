@@ -24,10 +24,6 @@ PS: Vue CLI 4.x requires Node.js version 8.9 or above (v10+ recommended). You ca
 npm i -g yarn
 ```
 
-```
-yarn global add @vue/cli
-```
-
 ### Project setup
 ```
 yarn install
