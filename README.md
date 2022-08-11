@@ -51,7 +51,7 @@ yarn lint
 
 ## About the project and the problem
 
-In that [link](https://gitlab.com/voyager-portal/voyager-rover-test) you can see the problem proposed.<br />
+In that [link](https://codereview.stackexchange.com/questions/181113/mars-rover-challenge) you can see the problem proposed.<br />
 The logical part, you can find in models folder (```src/models/```).<br />
 The code responsible to the simulation that you find when you open http://localhost:8080, is on ```src/components/PlateauView.vue```.<br />
 To add more rovers with different patterns of movement, just add a new Rover object declaration on the ```rovers``` array, on line 40 of ```PlateauView.vue``` file.<br />
